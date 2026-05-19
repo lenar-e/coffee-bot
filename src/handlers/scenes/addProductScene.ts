@@ -25,6 +25,24 @@ export const createAddProductScene = () =>
       }
 
       (ctx.wizard.state as WizardState).name = name;
+      await ctx.reply(
+        "Введите категорию (например: Классические напитки, Авторские, Сезонные, Десерты):"
+      );
+      return ctx.wizard.next();
+    },
+    async (ctx) => {
+      if (!ctx.message || !("text" in ctx.message)) {
+        await ctx.reply("Пожалуйста, отправьте категорию текстом.");
+        return undefined;
+      }
+
+      const category = ctx.message.text.trim();
+      if (!category) {
+        await ctx.reply("Категория не может быть пустой. Введите категорию:");
+        return undefined;
+      }
+
+      (ctx.wizard.state as WizardState).category = category;
       await ctx.reply("Введите цену (в рублях):");
       return ctx.wizard.next();
     },
@@ -42,11 +60,12 @@ export const createAddProductScene = () =>
 
       const product = addProduct({
         name: (ctx.wizard.state as WizardState).name || "",
-        price: Math.round(price)
+        price: Math.round(price),
+        category: (ctx.wizard.state as WizardState).category || "Прочее"
       });
 
       await ctx.reply(
-        `Товар добавлен: ${product.name} — ${product.price} ₽`,
+        `Товар добавлен: ${product.name} (${product.category}) — ${product.price} ₽`,
         adminMainKeyboard()
       );
 

@@ -1,15 +1,18 @@
 export type OrderStatus = "pending" | "accepted" | "rejected";
+export type DrinkSize = "S" | "M" | "L" | "ONE";
 
 export interface Product {
   id: number;
   name: string;
   price: number;
   available: boolean;
+  category: string;
 }
 
 export interface CartItem {
   productId: number;
   quantity: number;
+  size: DrinkSize;
 }
 
 export interface CartDetailsItem {
@@ -18,6 +21,8 @@ export interface CartDetailsItem {
   price: number;
   quantity: number;
   lineTotal: number;
+  size: DrinkSize;
+  removeKey: string;
 }
 
 export interface Order {
@@ -33,6 +38,7 @@ export interface Order {
 export interface WizardState {
   customerName?: string;
   name?: string;
+  category?: string;
 }
 
 export interface AppSession {

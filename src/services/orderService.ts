@@ -50,7 +50,10 @@ export const updateOrderStatus = (
 
 const formatOrderItems = (items: CartDetailsItem[]): string =>
   items
-    .map((item) => `- ${item.name} x${item.quantity} = ${item.lineTotal} ₽`)
+    .map((item) => {
+      const sizeLabel = item.size === "ONE" ? "" : ` (${item.size})`;
+      return `- ${item.name}${sizeLabel} x${item.quantity} = ${item.lineTotal} ₽`;
+    })
     .join("\n");
 
 export const formatOrderForAdmin = (order: Order): string => {

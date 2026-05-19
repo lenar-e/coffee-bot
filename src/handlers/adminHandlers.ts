@@ -28,9 +28,9 @@ export const registerAdminHandlers = (
 
     for (const product of products) {
       await ctx.reply(
-        `#${product.id} ${product.name}\nЦена: ${product.price} ₽\nНаличие: ${
-          product.available ? "Да" : "Нет"
-        }`,
+        `#${product.id} ${product.name}\nКатегория: ${product.category}\nЦена: ${
+          product.price
+        } ₽\nНаличие: ${product.available ? "Да" : "Нет"}`,
         adminProductButtons(product)
       );
     }
