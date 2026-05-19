@@ -1,7 +1,13 @@
-const { clientMainKeyboard, adminMainKeyboard } = require("../keyboards/replyKeyboards");
+import { Telegraf } from "telegraf";
+import { adminMainKeyboard, clientMainKeyboard } from "../keyboards/replyKeyboards";
+import { BotContext } from "../types";
 
-const registerCommonHandlers = (bot, { adminId }) => {
-  const isAdmin = (ctx) => String(ctx.from.id) === String(adminId);
+export const registerCommonHandlers = (
+  bot: Telegraf<BotContext>,
+  { adminId }: { adminId?: string }
+): void => {
+  const isAdmin = (ctx: BotContext): boolean =>
+    String(ctx.from?.id) === String(adminId);
 
   bot.start(async (ctx) => {
     if (isAdmin(ctx)) {
@@ -27,8 +33,4 @@ const registerCommonHandlers = (bot, { adminId }) => {
 
     await ctx.reply("Нет активного действия для отмены.");
   });
-};
-
-module.exports = {
-  registerCommonHandlers
 };

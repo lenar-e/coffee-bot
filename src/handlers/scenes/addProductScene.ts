@@ -1,11 +1,12 @@
-const { Scenes } = require("telegraf");
-const { addProduct } = require("../../services/productService");
-const { adminMainKeyboard } = require("../../keyboards/replyKeyboards");
+import { Scenes } from "telegraf";
+import { adminMainKeyboard } from "../../keyboards/replyKeyboards";
+import { addProduct } from "../../services/productService";
+import { WizardState } from "../../types";
 
-const SCENE_ID = "add-product";
+export const SCENE_ID = "add-product";
 
-const createAddProductScene = () =>
-  new Scenes.WizardScene(
+export const createAddProductScene = () =>
+  new Scenes.WizardScene<any>(
     SCENE_ID,
     async (ctx) => {
       await ctx.reply("Введите название товара:");
@@ -23,7 +24,7 @@ const createAddProductScene = () =>
         return undefined;
       }
 
-      ctx.wizard.state.name = name;
+      (ctx.wizard.state as WizardState).name = name;
       await ctx.reply("Введите цену (в рублях):");
       return ctx.wizard.next();
     },
@@ -40,7 +41,7 @@ const createAddProductScene = () =>
       }
 
       const product = addProduct({
-        name: ctx.wizard.state.name,
+        name: (ctx.wizard.state as WizardState).name || "",
         price: Math.round(price)
       });
 
@@ -52,8 +53,3 @@ const createAddProductScene = () =>
       return ctx.scene.leave();
     }
   );
-
-module.exports = {
-  SCENE_ID,
-  createAddProductScene
-};

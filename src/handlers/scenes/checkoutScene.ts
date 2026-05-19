@@ -1,20 +1,17 @@
-const { Scenes } = require("telegraf");
-const {
-  clearCart,
-  getCartDetails,
-  getCartTotal
-} = require("../../services/cartService");
-const { createOrder, formatOrderForAdmin } = require("../../services/orderService");
-const { clientMainKeyboard } = require("../../keyboards/replyKeyboards");
-const { adminOrderButtons } = require("../../keyboards/inlineKeyboards");
+import { Scenes } from "telegraf";
+import { adminOrderButtons } from "../../keyboards/inlineKeyboards";
+import { clientMainKeyboard } from "../../keyboards/replyKeyboards";
+import { clearCart, getCartDetails, getCartTotal } from "../../services/cartService";
+import { createOrder, formatOrderForAdmin } from "../../services/orderService";
+import { AppSession, WizardState } from "../../types";
 
-const SCENE_ID = "checkout-order";
+export const SCENE_ID = "checkout-order";
 
-const createCheckoutScene = ({ adminId }) =>
-  new Scenes.WizardScene(
+export const createCheckoutScene = ({ adminId }: { adminId?: string }) =>
+  new Scenes.WizardScene<any>(
     SCENE_ID,
     async (ctx) => {
-      const items = getCartDetails(ctx.session);
+      const items = getCartDetails(ctx.session as AppSession);
       if (!items.length) {
         await ctx.reply("Корзина пуста.", clientMainKeyboard());
         return ctx.scene.leave();
@@ -29,8 +26,8 @@ const createCheckoutScene = ({ adminId }) =>
         return undefined;
       }
 
-      ctx.wizard.state.customerName = ctx.message.text.trim();
-      if (!ctx.wizard.state.customerName) {
+      (ctx.wizard.state as WizardState).customerName = ctx.message.text.trim();
+      if (!(ctx.wizard.state as WizardState).customerName) {
         await ctx.reply("Имя не может быть пустым. Введите имя:");
         return undefined;
       }
@@ -50,29 +47,29 @@ const createCheckoutScene = ({ adminId }) =>
         return undefined;
       }
 
-      const items = getCartDetails(ctx.session);
+      const items = getCartDetails(ctx.session as AppSession);
       if (!items.length) {
         await ctx.reply("Корзина пуста.", clientMainKeyboard());
         return ctx.scene.leave();
       }
 
-      const totalPrice = getCartTotal(ctx.session);
+      const totalPrice = getCartTotal(ctx.session as AppSession);
       const order = createOrder({
         userId: ctx.from.id,
-        customerName: ctx.wizard.state.customerName,
+        customerName: (ctx.wizard.state as WizardState).customerName || "",
         phone,
         items,
         totalPrice
       });
 
       // После создания заказа очищаем корзину, чтобы избежать повторной отправки.
-      clearCart(ctx.session);
+      clearCart(ctx.session as AppSession);
       await ctx.reply("Ваш заказ отправлен", clientMainKeyboard());
 
       if (adminId) {
         try {
           await ctx.telegram.sendMessage(
-            adminId,
+            Number(adminId),
             `Новый заказ!\n\n${formatOrderForAdmin(order)}`,
             adminOrderButtons(order.id)
           );
@@ -84,8 +81,3 @@ const createCheckoutScene = ({ adminId }) =>
       return ctx.scene.leave();
     }
   );
-
-module.exports = {
-  SCENE_ID,
-  createCheckoutScene
-};

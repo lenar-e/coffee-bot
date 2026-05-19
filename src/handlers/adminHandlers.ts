@@ -1,24 +1,18 @@
-const { adminMainKeyboard } = require("../keyboards/replyKeyboards");
-const {
-  adminOrderButtons,
-  adminProductButtons
-} = require("../keyboards/inlineKeyboards");
-const {
-  deleteProduct,
-  getAllProducts,
-  toggleProductAvailability
-} = require("../services/productService");
-const {
-  formatOrderForAdmin,
-  getAllOrders,
-  getOrderById,
-  updateOrderStatus
-} = require("../services/orderService");
-const { SCENE_ID: ADD_PRODUCT_SCENE_ID } = require("./scenes/addProductScene");
+import { Telegraf } from "telegraf";
+import { adminOrderButtons, adminProductButtons } from "../keyboards/inlineKeyboards";
+import { adminMainKeyboard } from "../keyboards/replyKeyboards";
+import { formatOrderForAdmin, getAllOrders, getOrderById, updateOrderStatus } from "../services/orderService";
+import { deleteProduct, getAllProducts, toggleProductAvailability } from "../services/productService";
+import { BotContext } from "../types";
+import { SCENE_ID as ADD_PRODUCT_SCENE_ID } from "./scenes/addProductScene";
 
-const createAdminGuard = (adminId) => (ctx) => String(ctx.from.id) === String(adminId);
+const createAdminGuard = (adminId?: string) => (ctx: BotContext): boolean =>
+  String(ctx.from?.id) === String(adminId);
 
-const registerAdminHandlers = (bot, { adminId }) => {
+export const registerAdminHandlers = (
+  bot: Telegraf<BotContext>,
+  { adminId }: { adminId?: string }
+): void => {
   const isAdmin = createAdminGuard(adminId);
 
   bot.hears("Товары", async (ctx) => {
@@ -154,16 +148,9 @@ const registerAdminHandlers = (bot, { adminId }) => {
     await ctx.reply(`Статус заказа #${orderId}: rejected`, adminMainKeyboard());
 
     try {
-      await ctx.telegram.sendMessage(
-        order.userId,
-        `Ваш заказ #${orderId} отклонен.`
-      );
+      await ctx.telegram.sendMessage(order.userId, `Ваш заказ #${orderId} отклонен.`);
     } catch (error) {
       console.error("Не удалось отправить уведомление клиенту:", error);
     }
   });
-};
-
-module.exports = {
-  registerAdminHandlers
 };

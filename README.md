@@ -1,6 +1,6 @@
 # Coffee Bot (Telegraf)
 
-Telegram-бот кофейни на Node.js + Telegraf с клиентской частью и админ-панелью.
+Telegram-бот кофейни на Node.js + TypeScript + Telegraf с клиентской частью и админ-панелью.
 
 ## Функциональность
 
@@ -23,24 +23,24 @@ Telegram-бот кофейни на Node.js + Telegraf с клиентской �
 ```text
 .
 ├── src
-│   ├── bot.js
+│   ├── bot.ts
 │   ├── data
-│   │   ├── orders.js
-│   │   └── products.js
+│   │   ├── orders.ts
+│   │   └── products.ts
 │   ├── handlers
-│   │   ├── adminHandlers.js
-│   │   ├── clientHandlers.js
-│   │   ├── commonHandlers.js
+│   │   ├── adminHandlers.ts
+│   │   ├── clientHandlers.ts
+│   │   ├── commonHandlers.ts
 │   │   └── scenes
-│   │       ├── addProductScene.js
-│   │       └── checkoutScene.js
+│   │       ├── addProductScene.ts
+│   │       └── checkoutScene.ts
 │   ├── keyboards
-│   │   ├── inlineKeyboards.js
-│   │   └── replyKeyboards.js
+│   │   ├── inlineKeyboards.ts
+│   │   └── replyKeyboards.ts
 │   └── services
-│       ├── cartService.js
-│       ├── orderService.js
-│       └── productService.js
+│       ├── cartService.ts
+│       ├── orderService.ts
+│       └── productService.ts
 ├── .env
 ├── .env.example
 ├── package.json
@@ -54,10 +54,13 @@ Telegram-бот кофейни на Node.js + Telegraf с клиентской �
 ```env
 BOT_TOKEN=token
 ADMIN_ID=telegram_id
+# Опционально, если сеть блокирует Telegram API:
+# HTTPS_PROXY=http://user:pass@proxy-host:port
 ```
 
 - `BOT_TOKEN` — токен Telegram-бота
 - `ADMIN_ID` — Telegram ID администратора
+- `HTTPS_PROXY` — опциональный HTTP/HTTPS прокси для доступа к `api.telegram.org`
 
 ## Установка и запуск
 
@@ -69,6 +72,7 @@ npm run dev
 ## Используемые технологии
 
 - Node.js
+- TypeScript
 - Telegraf
 - dotenv
 - In-memory хранение данных (без БД)

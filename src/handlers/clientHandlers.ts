@@ -1,9 +1,11 @@
-const { addToCart, getCartDetails, getCartTotal } = require("../services/cartService");
-const { getAvailableProducts } = require("../services/productService");
-const { addToCartButton, checkoutButton } = require("../keyboards/inlineKeyboards");
-const { SCENE_ID: CHECKOUT_SCENE_ID } = require("./scenes/checkoutScene");
+import { Telegraf } from "telegraf";
+import { addToCartButton, checkoutButton } from "../keyboards/inlineKeyboards";
+import { getAvailableProducts } from "../services/productService";
+import { addToCart, getCartDetails, getCartTotal } from "../services/cartService";
+import { AppSession, BotContext } from "../types";
+import { SCENE_ID as CHECKOUT_SCENE_ID } from "./scenes/checkoutScene";
 
-const registerClientHandlers = (bot) => {
+export const registerClientHandlers = (bot: Telegraf<BotContext>): void => {
   bot.hears("Меню", async (ctx) => {
     const products = getAvailableProducts();
 
@@ -25,7 +27,7 @@ const registerClientHandlers = (bot) => {
   });
 
   bot.hears("Мой заказ", async (ctx) => {
-    const cartItems = getCartDetails(ctx.session);
+    const cartItems = getCartDetails(ctx.session as AppSession);
     if (!cartItems.length) {
       await ctx.reply("Корзина пуста. Нажмите «Меню», чтобы выбрать товар.");
       return;
@@ -34,16 +36,16 @@ const registerClientHandlers = (bot) => {
     const itemsText = cartItems
       .map((item) => `- ${item.name} x${item.quantity} = ${item.lineTotal} ₽`)
       .join("\n");
-    const total = getCartTotal(ctx.session);
+    const total = getCartTotal(ctx.session as AppSession);
 
     await ctx.reply(`Ваш заказ:\n${itemsText}\n\nИтого: ${total} ₽`, checkoutButton());
   });
 
   bot.action(/^add_to_cart_(\d+)$/, async (ctx) => {
     const productId = Number(ctx.match[1]);
-    const result = addToCart(ctx.session, productId);
+    const result = addToCart(ctx.session as AppSession, productId);
 
-    if (!result.ok) {
+    if (result.ok === false) {
       await ctx.answerCbQuery(result.reason, { show_alert: true });
       return;
     }
@@ -53,7 +55,7 @@ const registerClientHandlers = (bot) => {
   });
 
   bot.action("checkout_order", async (ctx) => {
-    const cartItems = getCartDetails(ctx.session);
+    const cartItems = getCartDetails(ctx.session as AppSession);
     if (!cartItems.length) {
       await ctx.answerCbQuery("Корзина пуста", { show_alert: true });
       return;
@@ -62,8 +64,4 @@ const registerClientHandlers = (bot) => {
     await ctx.answerCbQuery();
     await ctx.scene.enter(CHECKOUT_SCENE_ID);
   });
-};
-
-module.exports = {
-  registerClientHandlers
 };

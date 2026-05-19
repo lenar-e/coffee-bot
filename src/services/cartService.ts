@@ -1,12 +1,18 @@
-const { getProductById } = require("./productService");
+import { AppSession, CartDetailsItem, CartItem, Product } from "../types";
+import { getProductById } from "./productService";
 
-const ensureCart = (session) => {
+const ensureCart = (session: AppSession): void => {
   if (!Array.isArray(session.cart)) {
     session.cart = [];
   }
 };
 
-const addToCart = (session, productId) => {
+export const addToCart = (
+  session: AppSession,
+  productId: number
+):
+  | { ok: true; product: Product }
+  | { ok: false; reason: string } => {
   ensureCart(session);
 
   const product = getProductById(productId);
@@ -14,7 +20,7 @@ const addToCart = (session, productId) => {
     return { ok: false, reason: "Товар недоступен" };
   }
 
-  const existingItem = session.cart.find((item) => item.productId === productId);
+  const existingItem = session.cart.find((item: CartItem) => item.productId === productId);
   if (existingItem) {
     existingItem.quantity += 1;
   } else {
@@ -24,11 +30,11 @@ const addToCart = (session, productId) => {
   return { ok: true, product };
 };
 
-const getCartDetails = (session) => {
+export const getCartDetails = (session: AppSession): CartDetailsItem[] => {
   ensureCart(session);
 
   return session.cart
-    .map((item) => {
+    .map((item: CartItem) => {
       const product = getProductById(item.productId);
       if (!product) {
         return null;
@@ -42,19 +48,12 @@ const getCartDetails = (session) => {
         lineTotal: product.price * item.quantity
       };
     })
-    .filter(Boolean);
+    .filter((item): item is CartDetailsItem => Boolean(item));
 };
 
-const getCartTotal = (session) =>
+export const getCartTotal = (session: AppSession): number =>
   getCartDetails(session).reduce((sum, item) => sum + item.lineTotal, 0);
 
-const clearCart = (session) => {
+export const clearCart = (session: AppSession): void => {
   session.cart = [];
-};
-
-module.exports = {
-  addToCart,
-  getCartDetails,
-  getCartTotal,
-  clearCart
 };

@@ -2,9 +2,11 @@
   "name": "coffee-bot",
   "version": "1.0.0",
   "description": "Telegram bot for coffee shop on Telegraf",
-  "main": "src/bot.js",
+  "main": "dist/bot.js",
   "scripts": {
-    "dev": "node src/bot.js"
+    "dev": "ts-node-dev --respawn --transpile-only src/bot.ts",
+    "build": "tsc",
+    "start": "node dist/bot.js"
   },
   "keywords": [
     "telegram",
@@ -16,6 +18,12 @@
   "license": "MIT",
   "dependencies": {
     "dotenv": "^17.2.3",
+    "https-proxy-agent": "^7.0.6",
     "telegraf": "^4.16.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.3"
   }
 }

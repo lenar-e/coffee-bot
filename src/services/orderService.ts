@@ -1,15 +1,22 @@
-const { orders } = require("../data/orders");
+import { orders } from "../data/orders";
+import { CartDetailsItem, Order, OrderStatus } from "../types";
 
 let nextOrderId = 1;
 
-const createOrder = ({
+export const createOrder = ({
   userId,
   customerName,
   phone,
   items,
   totalPrice
-}) => {
-  const order = {
+}: {
+  userId: number;
+  customerName: string;
+  phone: string;
+  items: CartDetailsItem[];
+  totalPrice: number;
+}): Order => {
+  const order: Order = {
     id: nextOrderId++,
     userId,
     customerName,
@@ -23,11 +30,15 @@ const createOrder = ({
   return order;
 };
 
-const getAllOrders = () => orders;
+export const getAllOrders = (): Order[] => orders;
 
-const getOrderById = (id) => orders.find((order) => order.id === id) || null;
+export const getOrderById = (id: number): Order | null =>
+  orders.find((order) => order.id === id) || null;
 
-const updateOrderStatus = (id, status) => {
+export const updateOrderStatus = (
+  id: number,
+  status: OrderStatus
+): Order | null => {
   const order = getOrderById(id);
   if (!order) {
     return null;
@@ -37,12 +48,12 @@ const updateOrderStatus = (id, status) => {
   return order;
 };
 
-const formatOrderItems = (items) =>
+const formatOrderItems = (items: CartDetailsItem[]): string =>
   items
     .map((item) => `- ${item.name} x${item.quantity} = ${item.lineTotal} ₽`)
     .join("\n");
 
-const formatOrderForAdmin = (order) => {
+export const formatOrderForAdmin = (order: Order): string => {
   const itemsText = formatOrderItems(order.items);
   return (
     `Заказ #${order.id}\n` +
@@ -52,12 +63,4 @@ const formatOrderForAdmin = (order) => {
     `Сумма: ${order.totalPrice} ₽\n` +
     `Статус: ${order.status}`
   );
-};
-
-module.exports = {
-  createOrder,
-  getAllOrders,
-  getOrderById,
-  updateOrderStatus,
-  formatOrderForAdmin
 };
