@@ -1,0 +1,21 @@
+{
+  "name": "coffee-bot",
+  "version": "1.0.0",
+  "description": "Telegram bot for coffee shop on Telegraf",
+  "main": "src/bot.js",
+  "scripts": {
+    "dev": "node src/bot.js"
+  },
+  "keywords": [
+    "telegram",
+    "telegraf",
+    "bot",
+    "coffee"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "telegraf": "^4.16.3"
+  }
+}
